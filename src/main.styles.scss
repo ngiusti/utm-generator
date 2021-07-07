@@ -166,6 +166,7 @@ table {
 .admin-value__wrap {
     display: flex;
     justify-content: space-between;
+    padding: 10px;
     &:nth-child(odd) {
         background-color: #eee;
     }
@@ -176,6 +177,7 @@ table {
 
 .admin-value-remove {
     color: red;
+    cursor: pointer;
 }
 
 .tabs__wrap {

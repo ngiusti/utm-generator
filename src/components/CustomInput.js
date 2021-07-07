@@ -1,18 +1,36 @@
 import React from "react";
 
 export default function CustomInput(props) {
+    function checkInput(e) {
+        props.valueFunc(props.tag, e.target.value);
+    }
+
     let input;
+
     if (props.type === "dropdown") {
+        const listItems = props.data.map((el) => (
+            <option key={el} value={el}>
+                {el}
+            </option>
+        ));
         input = (
-            <select className="input">
-                <option value="volvo">Volvo</option>
-                <option value="saab">Saab</option>
-                <option value="mercedes">Mercedes</option>
-                <option value="audi">Audi</option>
+            <select
+                onChange={(e) => checkInput(e)}
+                className="input"
+                required={props.required}
+            >
+                <option>Select One</option>
+                {listItems}
             </select>
         );
     } else {
-        input = <input className="input" />;
+        input = (
+            <input
+                onChange={(e) => checkInput(e)}
+                className="input"
+                required={props.required}
+            />
+        );
     }
     return (
         <div className="input__wrap">

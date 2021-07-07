@@ -4,22 +4,26 @@ export default class DropdownList extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            list: props.list,
+            list: this.props.list,
             value: "",
         };
     }
 
     addToList() {
+        this.props.updateFunc(this.state.value, this.props.tag);
         this.setState((prevState) => ({
-            list: [...prevState.list, this.state.value],
             value: "",
         }));
     }
 
-    removeFromList(id) {
-        this.setState((prevState) => ({
-            list: prevState.list.filter((el) => el !== id),
-        }));
+    removeFromList(event) {
+        this.props.removeFunc(
+            event.target.previousSibling.innerText,
+            this.props.tag
+        );
+        // this.setState((prevState) => ({
+        //     list: prevState.list.filter((el) => el !== id),
+        // }));
     }
 
     handleChange = (event) => {
@@ -28,6 +32,14 @@ export default class DropdownList extends Component {
             value: value,
         });
     };
+
+    componentDidUpdate() {
+        if (this.state.list !== this.props.list) {
+            this.setState({
+                list: this.props.list,
+            });
+        }
+    }
 
     render() {
         return (
@@ -39,7 +51,7 @@ export default class DropdownList extends Component {
                             <h3 className="admin-value">{value}</h3>
                             <h3
                                 className="admin-value-remove"
-                                onClick={() => this.removeFromList(value)}
+                                onClick={(e) => this.removeFromList(e)}
                             >
                                 X
                             </h3>
@@ -52,7 +64,10 @@ export default class DropdownList extends Component {
                         value={this.state.value}
                         onChange={this.handleChange}
                     />
-                    <button onClick={() => this.addToList()}>
+                    <button
+                        onClick={() => this.addToList()}
+                        disabled={this.state.value.length < 1}
+                    >
                         Add new value
                     </button>
                 </div>
