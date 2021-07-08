@@ -4,6 +4,12 @@ import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
 
 import { firestore } from "../firebase/firebase.utilz";
+import firebase from "../firebase/firebase.utilz";
+
+var ref = firestore
+    .collection("data")
+    .doc("iGtGunKCe4CflMrQ5QRQ")
+    .collection("emails");
 
 export default class UrlGenerator extends Component {
     constructor() {
@@ -13,6 +19,7 @@ export default class UrlGenerator extends Component {
             source: [],
             medium: [],
             generate: false,
+            utmValue: "",
         };
     }
 
@@ -31,11 +38,79 @@ export default class UrlGenerator extends Component {
             });
     }
 
-    generateUrl() {
+    updateList() {
+        ref.doc(this.state.email).update({
+            utm: firebase.firestore.FieldValue.arrayUnion({
+                url: this.state.utmValue,
+                campaign: this.state.campaign,
+                source: this.state.sourceItem,
+            }),
+        });
+    }
+
+    generateUrl(event) {
         this.setState({
             generate: !this.state.generate,
         });
-        console.log(this.state);
+        if (this.state.generate === true) {
+            this.setState({
+                email: "",
+                url: "",
+                leadSourceItem: "",
+                mediumItem: "",
+                sourceItem: "",
+                term: "",
+                campaign: "",
+                content: "",
+            });
+        } else {
+            this.utmGeneration();
+        }
+    }
+
+    utmGeneration() {
+        var testVal = "";
+        const {
+            url,
+            leadSourceItem,
+            mediumItem,
+            sourceItem,
+            campaign,
+            content,
+            term,
+        } = this.state;
+        if (url) {
+            testVal += url;
+        }
+        if (leadSourceItem) {
+            testVal += "?source=" + this.formateString(leadSourceItem);
+        }
+        if (campaign) {
+            testVal += "&utm_campaign=" + this.formateString(campaign);
+        }
+        if (sourceItem) {
+            testVal += "&utm_source=" + this.formateString(sourceItem);
+        }
+        if (mediumItem) {
+            testVal += "&utm_medium=" + this.formateString(mediumItem);
+        }
+        if (content) {
+            testVal += "&utm_content=" + this.formateString(content);
+        }
+        if (term) {
+            testVal += "&utm_term=" + this.formateString(term);
+        }
+        this.setState(
+            {
+                utmValue: testVal,
+            },
+            this.updateList
+        );
+    }
+
+    formateString(str) {
+        let fString = str.replace(" ", "%20");
+        return fString;
     }
 
     setValues = (tag, value) => {
@@ -50,13 +125,7 @@ export default class UrlGenerator extends Component {
                     <h2>Generated</h2>
                     <div>
                         <h2>Created UTM</h2>
-                        <h3>
-                            {this.state.url}?source={this.state.leadSourceItem}
-                            &utm_campaign={this.state.campaign}&utm_source=
-                            {this.state.sourceItem}&utm_medium=
-                            {this.state.mediumItem}&utm_content=
-                            {this.state.content}&utm_term={this.state.term}
-                        </h3>
+                        <h3 className="utm-value">{this.state.utmValue}</h3>
                     </div>
                     <h3>Email: {this.state.email}</h3>
                     <h3>URL: {this.state.url}</h3>
@@ -68,7 +137,7 @@ export default class UrlGenerator extends Component {
                     <h3>Content: {this.state.content}</h3>
                     <CustomButton
                         copy="Generate Another URL"
-                        buttonFunc={() => this.generateUrl()}
+                        buttonFunc={(e) => this.generateUrl(e)}
                     />
                 </div>
             );
@@ -80,7 +149,7 @@ export default class UrlGenerator extends Component {
                             label="Your Email"
                             tag="email"
                             valueFunc={this.setValues}
-                            required="required"
+                            required={true}
                         />
                         <CustomInput
                             tag="leadSourceItem"
@@ -88,13 +157,13 @@ export default class UrlGenerator extends Component {
                             type="dropdown"
                             valueFunc={this.setValues}
                             data={this.state.leadSource}
-                            required="required"
+                            required={true}
                         />
                         <CustomInput
                             label="Landing Page URL"
                             tag="url"
                             valueFunc={this.setValues}
-                            required="required"
+                            required={true}
                         />
                     </div>
                     <h2 className="section-header">
@@ -105,7 +174,7 @@ export default class UrlGenerator extends Component {
                             label="Free Form Text"
                             tag="campaign"
                             valueFunc={this.setValues}
-                            required="required"
+                            required={true}
                         />
                     </div>
                     <h2 className="section-header">Other UTM Parameters</h2>
@@ -116,7 +185,7 @@ export default class UrlGenerator extends Component {
                             type="dropdown"
                             valueFunc={this.setValues}
                             data={this.state.medium}
-                            required="required"
+                            required={true}
                         />
                         <CustomInput
                             label="Source"
@@ -124,7 +193,7 @@ export default class UrlGenerator extends Component {
                             type="dropdown"
                             valueFunc={this.setValues}
                             data={this.state.source}
-                            required="required"
+                            required={true}
                         />
                         <CustomInput
                             label="Content (optional)"
@@ -139,7 +208,7 @@ export default class UrlGenerator extends Component {
                     </div>
                     <CustomButton
                         copy="Generate URL"
-                        buttonFunc={() => this.generateUrl()}
+                        buttonFunc={(e) => this.generateUrl(e)}
                         type="submit"
                     />
                 </form>

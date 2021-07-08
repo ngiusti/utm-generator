@@ -29,6 +29,8 @@ export default function CustomInput(props) {
                 onChange={(e) => checkInput(e)}
                 className="input"
                 required={props.required}
+                value={props.value}
+                readOnly={props.readOnly}
             />
         );
     }

@@ -21,9 +21,6 @@ export default class DropdownList extends Component {
             event.target.previousSibling.innerText,
             this.props.tag
         );
-        // this.setState((prevState) => ({
-        //     list: prevState.list.filter((el) => el !== id),
-        // }));
     }
 
     handleChange = (event) => {
@@ -43,7 +40,7 @@ export default class DropdownList extends Component {
 
     render() {
         return (
-            <div class="admin__container">
+            <div className="admin__container">
                 <h2 className="section-header">{this.props.header}</h2>
                 {this.state.list.map((value, i) => {
                     return (
