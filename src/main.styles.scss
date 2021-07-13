@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400&display=swap");
+
 html,
 body,
 div,
@@ -78,7 +80,8 @@ summary,
 time,
 mark,
 audio,
-video {
+video,
+input {
     margin: 0;
     padding: 0;
     border: 0;
@@ -86,6 +89,8 @@ video {
     font: inherit;
     vertical-align: baseline;
     box-sizing: border-box;
+    font-family: "Noto Sans", sans-serif;
+    line-height: 135%;
 }
 /* HTML5 display-role reset for older browsers */
 article,
@@ -124,15 +129,27 @@ table {
     border-spacing: 0;
 }
 
+.page__container {
+    margin: 50px 0 80px;
+}
+
 .header__wrap {
     display: flex;
     justify-content: center;
-    margin: 30px;
+    margin: 50px;
 }
 
 .header {
     text-align: center;
-    font-size: 40px;
+    font-size: 60px;
+}
+
+.react-tabs__tab {
+    font-size: 20px;
+}
+
+.react-tabs__tab--selected {
+    border-radius: 10px 10px 0 0;
 }
 
 .tab-header {
@@ -147,6 +164,7 @@ table {
 
 .admin__container {
     width: 30%;
+    margin: 30px 0;
 }
 
 .admin-header {
@@ -156,11 +174,18 @@ table {
 .admin-list__wrap {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
 }
 
 .admin-input__wrap {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    margin: 30px 0;
+}
+
+.admin-values__wrap {
+    height: 300px;
+    overflow: scroll;
 }
 
 .admin-value__wrap {
@@ -180,17 +205,44 @@ table {
     cursor: pointer;
 }
 
+.admin-button {
+    background-color: rgba(64, 80, 198, 1);
+    color: white;
+    &:disabled {
+        background-color: lightgray;
+        color: gray;
+    }
+}
+
 .tabs__wrap {
     width: 90%;
     margin: 0 auto;
     ul {
         display: flex;
-        justify-content: center;
+        justify-content: space-evenly;
+    }
+}
+
+.button {
+    padding: 20px;
+    border: solid 2px rgba(64, 80, 198, 0.5);
+    border-radius: 0;
+    background-color: transparent;
+    font-size: 20px;
+    font-weight: bold;
+    color: #4e4e4e;
+    text-transform: capitalize;
+    transition: 0.5s all;
+    cursor: pointer;
+    &:hover {
+        background-color: rgba(64, 80, 198, 1);
+        color: white;
     }
 }
 
 .input-container {
     padding: 30px 0;
+    margin: 30px 0;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
@@ -208,10 +260,38 @@ table {
 }
 
 .input-header {
+    margin-bottom: 10px;
+    font-weight: bold;
 }
 
 .input {
     width: 100%;
+    border: solid 1px #cdcdcd;
+    background-color: #ffffff;
+    padding: 15px;
+    min-height: 60px;
+    font-size: 16px;
+    color: #4a4a4a;
+}
+
+.dropdown__wrapper {
+    position: relative;
+    &::after {
+        content: "v";
+        height: 10px;
+        width: 15px;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        line-height: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+.dropdown-list {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
 .utm-value {
@@ -228,7 +308,10 @@ table {
     margin: 30px;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end;
+    & button {
+        margin-bottom: 15px;
+    }
 }
 
 .url__wrap {

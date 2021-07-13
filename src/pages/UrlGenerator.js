@@ -11,6 +11,11 @@ var ref = firestore
     .doc("iGtGunKCe4CflMrQ5QRQ")
     .collection("emails");
 
+var campaignRef = firestore
+    .collection("data")
+    .doc("iGtGunKCe4CflMrQ5QRQ")
+    .collection("campaigns");
+
 export default class UrlGenerator extends Component {
     constructor() {
         super();
@@ -18,6 +23,7 @@ export default class UrlGenerator extends Component {
             leadSource: [],
             source: [],
             medium: [],
+            campaignList: [],
             generate: false,
             utmValue: "",
         };
@@ -36,6 +42,15 @@ export default class UrlGenerator extends Component {
                     });
                 });
             });
+        campaignRef.get().then((querySnapshot) => {
+            var list = [];
+            querySnapshot.forEach((doc) => {
+                list.push(doc.data().campaignTag);
+                this.setState({
+                    campaignList: list,
+                });
+            });
+        });
     }
 
     updateList() {
@@ -133,7 +148,7 @@ export default class UrlGenerator extends Component {
                     <h3>Medium: {this.state.mediumItem}</h3>
                     <h3>Source: {this.state.sourceItem}</h3>
                     <h3>Term: {this.state.term}</h3>
-                    <h3>Free Form Text: {this.state.campaign}</h3>
+                    <h3>Campaign: {this.state.campaign}</h3>
                     <h3>Content: {this.state.content}</h3>
                     <CustomButton
                         copy="Generate Another URL"
@@ -166,14 +181,14 @@ export default class UrlGenerator extends Component {
                             required={true}
                         />
                     </div>
-                    <h2 className="section-header">
-                        Copy and Paste your SFDC Campaign Name Here
-                    </h2>
+                    <h2 className="section-header">Campagin</h2>
                     <div className="input-container">
                         <CustomInput
-                            label="Free Form Text"
+                            label="Campaign"
                             tag="campaign"
+                            type="dropdown"
                             valueFunc={this.setValues}
+                            data={this.state.campaignList}
                             required={true}
                         />
                     </div>
@@ -216,7 +231,7 @@ export default class UrlGenerator extends Component {
         }
 
         return (
-            <div className="url-generator__container">
+            <div className="url-generator__container page__container">
                 <h1 className="tab-header">Tracking URL Generator</h1>
                 {pageContent}
             </div>

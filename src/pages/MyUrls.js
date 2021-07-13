@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 import CustomInput from "../components/CustomInput";
+import CustomButton from "../components/CustomButton";
 
 import { firestore } from "../firebase/firebase.utilz";
 
@@ -77,7 +78,7 @@ export default class MyUrls extends Component {
         }
 
         return (
-            <div>
+            <div class="page__container">
                 <div className="url-heading__wrap">
                     <h1 className="tab-header">My Tracking URLs</h1>
                     <div className="url-heading-search__wrap">
@@ -88,9 +89,11 @@ export default class MyUrls extends Component {
                             onChange={this.handleChange}
                             valueFunc={this.setValues}
                         />
-                        <button onClick={() => this.getData(this.state.email)}>
-                            Get Urls
-                        </button>
+                        <CustomButton
+                            copy="Get Urls"
+                            buttonFunc={() => this.getData(this.state.email)}
+                            type="submit"
+                        />
                     </div>
                 </div>
 

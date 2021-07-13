@@ -42,28 +42,32 @@ export default class DropdownList extends Component {
         return (
             <div className="admin__container">
                 <h2 className="section-header">{this.props.header}</h2>
-                {this.state.list.map((value, i) => {
-                    return (
-                        <div key={value} className="admin-value__wrap">
-                            <h3 className="admin-value">{value}</h3>
-                            <h3
-                                className="admin-value-remove"
-                                onClick={(e) => this.removeFromList(e)}
-                            >
-                                X
-                            </h3>
-                        </div>
-                    );
-                })}
+                <div className="admin-values__wrap">
+                    {this.state.list.map((value, i) => {
+                        return (
+                            <div key={value} className="admin-value__wrap">
+                                <h3 className="admin-value">{value}</h3>
+                                <h3
+                                    className="admin-value-remove"
+                                    onClick={(e) => this.removeFromList(e)}
+                                >
+                                    X
+                                </h3>
+                            </div>
+                        );
+                    })}
+                </div>
                 <div className="admin-input__wrap">
                     <input
                         type="text"
                         value={this.state.value}
                         onChange={this.handleChange}
+                        className="input"
                     />
                     <button
                         onClick={() => this.addToList()}
                         disabled={this.state.value.length < 1}
+                        className="admin-button"
                     >
                         Add new value
                     </button>

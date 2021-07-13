@@ -14,6 +14,11 @@ export default class Admin extends Component {
             leadSource: [],
             source: [],
             medium: [],
+            fiscal: [],
+            region: [],
+            campaignTheme: [],
+            campaignType: [],
+            status: [],
         };
     }
 
@@ -31,6 +36,11 @@ export default class Admin extends Component {
                         leadSource: doc.data().leadSource,
                         source: doc.data().source,
                         medium: doc.data().medium,
+                        fiscal: doc.data().fiscal,
+                        region: doc.data().region,
+                        campaignTheme: doc.data().campaignTheme,
+                        campaignType: doc.data().campaignType,
+                        status: doc.data().status,
                     });
                 });
             });
@@ -50,7 +60,7 @@ export default class Admin extends Component {
 
     render() {
         return (
-            <div>
+            <div className="page__container">
                 <h2 className="tab-header">Content Admin</h2>
                 <div className="admin-list__wrap">
                     <DropdownList
@@ -71,6 +81,41 @@ export default class Admin extends Component {
                         header="Source"
                         tag="source"
                         list={this.state.source}
+                        updateFunc={this.updateList.bind(this)}
+                        removeFunc={this.removeFromList.bind(this)}
+                    />
+                    <DropdownList
+                        header="Fiscal Year/Quarter"
+                        tag="fiscal"
+                        list={this.state.fiscal}
+                        updateFunc={this.updateList.bind(this)}
+                        removeFunc={this.removeFromList.bind(this)}
+                    />
+                    <DropdownList
+                        header="Region"
+                        tag="region"
+                        list={this.state.region}
+                        updateFunc={this.updateList.bind(this)}
+                        removeFunc={this.removeFromList.bind(this)}
+                    />
+                    <DropdownList
+                        header="Campaign Theme"
+                        tag="campaignTheme"
+                        list={this.state.campaignTheme}
+                        updateFunc={this.updateList.bind(this)}
+                        removeFunc={this.removeFromList.bind(this)}
+                    />
+                    <DropdownList
+                        header="Campaign Type"
+                        tag="campaignType"
+                        list={this.state.campaignType}
+                        updateFunc={this.updateList.bind(this)}
+                        removeFunc={this.removeFromList.bind(this)}
+                    />
+                    <DropdownList
+                        header="Status"
+                        tag="status"
+                        list={this.state.status}
                         updateFunc={this.updateList.bind(this)}
                         removeFunc={this.removeFromList.bind(this)}
                     />
