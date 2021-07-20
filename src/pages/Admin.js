@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 
 import DropdownList from "../components/DropdownList";
+import CustomInput from "../components/CustomInput";
+import CustomButton from "../components/CustomButton";
 
 import { firestore } from "../firebase/firebase.utilz";
 import firebase from "../firebase/firebase.utilz";
@@ -11,6 +13,9 @@ export default class Admin extends Component {
     constructor() {
         super();
         this.state = {
+            password: "",
+            passwordCheck: "",
+            validation: false,
             leadSource: [],
             source: [],
             medium: [],
@@ -41,6 +46,7 @@ export default class Admin extends Component {
                         campaignTheme: doc.data().campaignTheme,
                         campaignType: doc.data().campaignType,
                         status: doc.data().status,
+                        passwordCheck: doc.data().password,
                     });
                 });
             });
@@ -58,10 +64,20 @@ export default class Admin extends Component {
         }).then(this.firebaseData.bind(this));
     }
 
+    setValues = (tag, value) => {
+        this.setState({ [tag]: value });
+    };
+
+    checkPassword() {
+        if (this.state.password === this.state.passwordCheck) {
+            this.setState({ validation: true });
+        }
+    }
+
     render() {
-        return (
-            <div className="page__container">
-                <h2 className="tab-header">Content Admin</h2>
+        let pageContent;
+        if (this.state.validation) {
+            pageContent = (
                 <div className="admin-list__wrap">
                     <DropdownList
                         header="Lead Source"
@@ -120,6 +136,29 @@ export default class Admin extends Component {
                         removeFunc={this.removeFromList.bind(this)}
                     />
                 </div>
+            );
+        } else {
+            pageContent = (
+                <div>
+                    <CustomInput
+                        label="Admin Password"
+                        type="text"
+                        tag="password"
+                        valueFunc={this.setValues}
+                    />
+                </div>
+            );
+        }
+
+        return (
+            <div className="page__container">
+                <h2 className="tab-header">Content Admin</h2>
+                {pageContent}
+                <CustomButton
+                    copy="Submit"
+                    buttonFunc={(e) => this.checkPassword(e)}
+                    type="submit"
+                />
             </div>
         );
     }

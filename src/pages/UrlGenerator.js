@@ -6,15 +6,9 @@ import CustomInput from "../components/CustomInput";
 import { firestore } from "../firebase/firebase.utilz";
 import firebase from "../firebase/firebase.utilz";
 
-var ref = firestore
-    .collection("data")
-    .doc("iGtGunKCe4CflMrQ5QRQ")
-    .collection("emails");
+var ref = firestore.collection("data").doc("iGtGunKCe4CflMrQ5QRQ").collection("emails");
 
-var campaignRef = firestore
-    .collection("data")
-    .doc("iGtGunKCe4CflMrQ5QRQ")
-    .collection("campaigns");
+var campaignRef = firestore.collection("data").doc("iGtGunKCe4CflMrQ5QRQ").collection("campaigns");
 
 export default class UrlGenerator extends Component {
     constructor() {
@@ -26,6 +20,14 @@ export default class UrlGenerator extends Component {
             campaignList: [],
             generate: false,
             utmValue: "",
+            email: "",
+            url: "",
+            leadSourceItem: "",
+            mediumItem: "",
+            sourceItem: "",
+            term: "",
+            campaign: "",
+            content: "",
         };
     }
 
@@ -45,10 +47,12 @@ export default class UrlGenerator extends Component {
         campaignRef.get().then((querySnapshot) => {
             var list = [];
             querySnapshot.forEach((doc) => {
-                list.push(doc.data().campaignTag);
-                this.setState({
-                    campaignList: list,
-                });
+                if (new Date().getTime() < new Date(doc.data().endDate).getTime()) {
+                    list.push(doc.data().campaignTag);
+                    this.setState({
+                        campaignList: list,
+                    });
+                }
             });
         });
     }
@@ -83,17 +87,16 @@ export default class UrlGenerator extends Component {
         }
     }
 
+    copyValue() {
+        var copyText = document.getElementById("copy-input__wrap").querySelector("input");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+    }
+
     utmGeneration() {
         var testVal = "";
-        const {
-            url,
-            leadSourceItem,
-            mediumItem,
-            sourceItem,
-            campaign,
-            content,
-            term,
-        } = this.state;
+        const { url, leadSourceItem, mediumItem, sourceItem, campaign, content, term } = this.state;
         if (url) {
             testVal += url;
         }
@@ -132,28 +135,40 @@ export default class UrlGenerator extends Component {
         this.setState({ [tag]: value });
     };
 
+    buttonEnable() {
+        if (
+            this.state.email !== "" &&
+            this.state.url !== "" &&
+            this.state.leadSourceItem !== "" &&
+            this.state.mediumItem !== "" &&
+            this.state.sourceItem !== "" &&
+            this.state.campaign !== ""
+        ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     render() {
         let pageContent;
         if (this.state.generate) {
             pageContent = (
-                <div>
-                    <h2>Generated</h2>
-                    <div>
-                        <h2>Created UTM</h2>
-                        <h3 className="utm-value">{this.state.utmValue}</h3>
+                <div className="generated__wrap">
+                    <h2 className="generated-header">Success!</h2>
+                    <div className="copy-input__wraper" id="copy-input__wrap">
+                        <CustomInput label="Created UTM" readOnly={true} type="text" value={this.state.utmValue} />
+                        <CustomButton copy="COPY" buttonFunc={(e) => this.copyValue(e)} />
                     </div>
-                    <h3>Email: {this.state.email}</h3>
-                    <h3>URL: {this.state.url}</h3>
-                    <h3>Lead Source: {this.state.leadSourceItem}</h3>
-                    <h3>Medium: {this.state.mediumItem}</h3>
-                    <h3>Source: {this.state.sourceItem}</h3>
-                    <h3>Term: {this.state.term}</h3>
-                    <h3>Campaign: {this.state.campaign}</h3>
-                    <h3>Content: {this.state.content}</h3>
-                    <CustomButton
-                        copy="Generate Another URL"
-                        buttonFunc={(e) => this.generateUrl(e)}
-                    />
+                    <h3 className="generated-content">Your Medallia Email: {this.state.email}</h3>
+                    <h3 className="generated-content">URL: {this.state.url}</h3>
+                    <h3 className="generated-content">Lead Source: {this.state.leadSourceItem}</h3>
+                    <h3 className="generated-content">Medium: {this.state.mediumItem}</h3>
+                    <h3 className="generated-content">Source: {this.state.sourceItem}</h3>
+                    <h3 className="generated-content">Term: {this.state.term}</h3>
+                    <h3 className="generated-content">Campaign: {this.state.campaign}</h3>
+                    <h3 className="generated-content">Content: {this.state.content}</h3>
+                    <CustomButton copy="Generate Another URL" buttonFunc={(e) => this.generateUrl(e)} />
                 </div>
             );
         } else {
@@ -163,6 +178,7 @@ export default class UrlGenerator extends Component {
                         <CustomInput
                             label="Your Email"
                             tag="email"
+                            info="Enter your email address"
                             valueFunc={this.setValues}
                             required={true}
                         />
@@ -170,6 +186,7 @@ export default class UrlGenerator extends Component {
                             tag="leadSourceItem"
                             label="Lead Source"
                             type="dropdown"
+                            info="Select the Lead Source closest to your campaign type"
                             valueFunc={this.setValues}
                             data={this.state.leadSource}
                             required={true}
@@ -177,6 +194,7 @@ export default class UrlGenerator extends Component {
                         <CustomInput
                             label="Landing Page URL"
                             tag="url"
+                            info="Enter your Landing Page URL associated to this campaign"
                             valueFunc={this.setValues}
                             required={true}
                         />
@@ -187,6 +205,7 @@ export default class UrlGenerator extends Component {
                             label="Campaign"
                             tag="campaign"
                             type="dropdown"
+                            info="This field should contain the name of your effort. Do not use spaces, periods or dashes. Underscores are allowed."
                             valueFunc={this.setValues}
                             data={this.state.campaignList}
                             required={true}
@@ -198,6 +217,7 @@ export default class UrlGenerator extends Component {
                             label="Medium"
                             tag="mediumItem"
                             type="dropdown"
+                            info="Select the medium for this URL"
                             valueFunc={this.setValues}
                             data={this.state.medium}
                             required={true}
@@ -206,6 +226,7 @@ export default class UrlGenerator extends Component {
                             label="Source"
                             tag="sourceItem"
                             type="dropdown"
+                            info="Select the Source for this URL"
                             valueFunc={this.setValues}
                             data={this.state.source}
                             required={true}
@@ -213,11 +234,13 @@ export default class UrlGenerator extends Component {
                         <CustomInput
                             label="Content (optional)"
                             tag="content"
+                            info="Enter content values to define testing or messaging"
                             valueFunc={this.setValues}
                         />
                         <CustomInput
                             label="Term (optional)"
                             tag="term"
+                            info="Enter term values for tracking paid campaigns"
                             valueFunc={this.setValues}
                         />
                     </div>
@@ -225,6 +248,7 @@ export default class UrlGenerator extends Component {
                         copy="Generate URL"
                         buttonFunc={(e) => this.generateUrl(e)}
                         type="submit"
+                        disabled={this.buttonEnable()}
                     />
                 </form>
             );

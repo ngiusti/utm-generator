@@ -5,31 +5,33 @@ import CustomButton from "../components/CustomButton";
 
 import { firestore } from "../firebase/firebase.utilz";
 
-var ref = firestore
-    .collection("data")
-    .doc("iGtGunKCe4CflMrQ5QRQ")
-    .collection("campaigns");
+var ref = firestore.collection("data").doc("iGtGunKCe4CflMrQ5QRQ").collection("campaigns");
 
-var campaignRef = firestore
-    .collection("data")
-    .doc("iGtGunKCe4CflMrQ5QRQ")
-    .collection("campaigns");
+var campaignRef = firestore.collection("data").doc("iGtGunKCe4CflMrQ5QRQ").collection("campaigns");
 
 export default class Salesforce extends Component {
     constructor() {
         super();
         this.state = {
             fiscalData: [],
+            fiscal: "",
             regionData: [],
+            region: "",
             campaignThemeData: [],
+            campaignTheme: "",
             campaignTypeData: [],
+            campaignType: "",
             statusData: [],
-            generate: false,
+            status: "",
+            email: "",
             campaignTag: "",
             cost: "",
             startDate: "",
             endDate: "",
             parentCampaignData: [],
+            parentCampaign: "",
+            freeFormText: "",
+            generate: false,
         };
     }
 
@@ -64,10 +66,27 @@ export default class Salesforce extends Component {
     };
 
     generateUrl(event) {
-        this.campaignGeneration();
         this.setState({
             generate: !this.state.generate,
         });
+        if (this.state.generate === true) {
+            this.setState({
+                fiscal: "",
+                region: "",
+                campaignTheme: "",
+                campaignType: "",
+                status: "",
+                email: "",
+                campaignTag: "",
+                cost: "",
+                startDate: "",
+                endDate: "",
+                parentCampaign: "",
+                freeFormText: "",
+            });
+        } else {
+            this.campaignGeneration();
+        }
     }
 
     regionAbv(region) {
@@ -90,8 +109,7 @@ export default class Salesforce extends Component {
 
     campaignGeneration() {
         var testVal = "";
-        const { fiscal, region, campaignTheme, campaignType, freeFormText } =
-            this.state;
+        const { fiscal, region, campaignTheme, campaignType, freeFormText } = this.state;
         if (fiscal) {
             testVal += fiscal;
         }
@@ -116,6 +134,11 @@ export default class Salesforce extends Component {
     }
 
     updateList() {
+        if (this.state.parentCampaign === "Select One" || this.state.parentCampaign === "") {
+            this.setState({
+                parentCampaign: "None",
+            });
+        }
         ref.doc(this.state.campaignTag).set({
             campaignTag: this.state.campaignTag,
             email: this.state.email,
@@ -129,40 +152,60 @@ export default class Salesforce extends Component {
             endDate: this.state.endDate,
             parentCampaign: this.state.parentCampaign,
             status: this.state.status,
-            active:
-                new Date().getTime() < new Date(this.state.endDate).getTime()
-                    ? true
-                    : false,
+            active: new Date().getTime() < new Date(this.state.endDate).getTime() ? true : false,
         });
+    }
+
+    buttonEnable() {
+        if (
+            this.state.email !== "" &&
+            this.state.fiscal !== "" &&
+            this.state.region !== "" &&
+            this.state.campaignTheme !== "" &&
+            this.state.freeFormText !== "" &&
+            this.state.campaignType !== "" &&
+            this.state.cost !== "" &&
+            this.state.startDate !== "" &&
+            this.state.endDate !== "" &&
+            this.state.status !== ""
+        ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    copyValue() {
+        var copyText = document.getElementById("copy-input__wrap").querySelector("input");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        document.execCommand("copy");
     }
 
     render() {
         let pageContent;
         if (this.state.generate) {
             pageContent = (
-                <div>
-                    <h2>Generated</h2>
-                    <div>
-                        <h2>Created Campaign</h2>
+                <div className="generated__wrap">
+                    <h2 className="generated-header">Success!</h2>
+                    <div className="copy-input__wraper" id="copy-input__wrap">
+                        <CustomInput label="Created UTM" readOnly={true} type="text" value={this.state.campaignTag} />
+                        <CustomButton copy="COPY" buttonFunc={(e) => this.copyValue(e)} />
                     </div>
-                    <div>{this.state.campaignTag}</div>
                     <div>
-                        <div>{this.state.email}</div>
-                        <div>{this.state.fiscal}</div>
-                        <div>{this.state.region}</div>
-                        <div>{this.state.campaignTheme}</div>
-                        <div>{this.state.freeFormText}</div>
-                        <div>{this.state.campaignType}</div>
-                        <div>${this.state.cost}</div>
-                        <div>
-                            {this.state.startDate} - {this.state.endDate}
-                        </div>
-                        <div>{this.state.parentCampaign}</div>
+                        <h3 className="generated-content">Your Medallia Email: {this.state.email}</h3>
+                        <h3 className="generated-content">Fiscal: {this.state.fiscal}</h3>
+                        <h3 className="generated-content">Region: {this.state.region}</h3>
+                        <h3 className="generated-content">Campaign Theme: {this.state.campaignTheme}</h3>
+                        <h3 className="generated-content">Free From Text: {this.state.freeFormText}</h3>
+                        <h3 className="generated-content">Campaign Type:{this.state.campaignType}</h3>
+                        <h3 className="generated-content">Cost: ${this.state.cost}</h3>
+                        <h3 className="generated-content">
+                            Effective Dates: {this.state.startDate} - {this.state.endDate}
+                        </h3>
+                        <h3 className="generated-content">Parent Campaign: {this.state.parentCampaign}</h3>
                     </div>
-                    <CustomButton
-                        copy="Generate Another Campaign"
-                        buttonFunc={(e) => this.generateUrl(e)}
-                    />
+                    <CustomButton copy="Generate Another Campaign" buttonFunc={(e) => this.generateUrl(e)} />
                 </div>
             );
         } else {
@@ -172,12 +215,14 @@ export default class Salesforce extends Component {
                         <CustomInput
                             label="Your Medallia Email"
                             tag="email"
+                            info="Enter your email address"
                             valueFunc={this.setValues}
                             required={true}
                         />
                         <CustomInput
                             label="Fiscal Year/Quarter"
                             tag="fiscal"
+                            info="Select your Fiscal Year"
                             valueFunc={this.setValues}
                             data={this.state.fiscalData}
                             type="dropdown"
@@ -186,6 +231,7 @@ export default class Salesforce extends Component {
                         <CustomInput
                             label="Region"
                             tag="region"
+                            info="Select your Region"
                             valueFunc={this.setValues}
                             data={this.state.regionData}
                             type="dropdown"
@@ -194,6 +240,7 @@ export default class Salesforce extends Component {
                         <CustomInput
                             label="Campaign Theme"
                             tag="campaignTheme"
+                            info="Campaign Theme"
                             valueFunc={this.setValues}
                             data={this.state.campaignThemeData}
                             type="dropdown"
@@ -202,12 +249,14 @@ export default class Salesforce extends Component {
                         <CustomInput
                             label="Free Form Text"
                             tag="freeFormText"
+                            info="This field should contain the name of your effort. Do not use spaces, periods or dashes. Underscores are allowed."
                             valueFunc={this.setValues}
                             required={true}
                         />
                         <CustomInput
                             label="Campaign Type"
                             tag="campaignType"
+                            info="Enter your Details"
                             valueFunc={this.setValues}
                             data={this.state.campaignTypeData}
                             type="dropdown"
@@ -217,6 +266,7 @@ export default class Salesforce extends Component {
                             label="Actual Cost"
                             tag="cost"
                             type="number"
+                            info="Enter Campaign Cost"
                             valueFunc={this.setValues}
                             required={true}
                         />
@@ -224,6 +274,7 @@ export default class Salesforce extends Component {
                             label="Start Date"
                             tag="startDate"
                             type="date"
+                            info="Enter Start Date"
                             valueFunc={this.setValues}
                             required={true}
                         />
@@ -231,6 +282,7 @@ export default class Salesforce extends Component {
                             label="End Date"
                             tag="endDate"
                             type="date"
+                            info="Enter End Date"
                             valueFunc={this.setValues}
                             required={true}
                         />
@@ -238,14 +290,15 @@ export default class Salesforce extends Component {
                             label="Parent Campaign"
                             tag="parentCampaign"
                             type="dropdown"
+                            info="Enter Parent Campaign"
                             valueFunc={this.setValues}
                             data={this.state.parentCampaignData}
-                            required={true}
                         />
                         <CustomInput
                             label="Status"
                             tag="status"
                             type="dropdown"
+                            info="Enter Campaign Status"
                             valueFunc={this.setValues}
                             data={this.state.statusData}
                             required={true}
@@ -255,15 +308,14 @@ export default class Salesforce extends Component {
                         copy="Generate Campaign"
                         buttonFunc={(e) => this.generateUrl(e)}
                         type="submit"
+                        disabled={this.buttonEnable()}
                     />
                 </form>
             );
         }
         return (
             <div className="page__container">
-                <h1 className="tab-header">
-                    Salesforce Campaign Name Generator
-                </h1>
+                <h1 className="tab-header">Salesforce Campaign Name Generator</h1>
                 {pageContent}
             </div>
         );
