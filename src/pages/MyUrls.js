@@ -72,7 +72,7 @@ export default class MyUrls extends Component {
         return (
             <div className="page__container">
                 <div className="url-heading__wrap">
-                    <h1 className="tab-header">My Tracking URLs</h1>
+                    <h1 className="tab-header">Tracking URLs</h1>
                     <div className="url-heading-search__wrap">
                         <CustomInput
                             label="Your Medallia Email"
